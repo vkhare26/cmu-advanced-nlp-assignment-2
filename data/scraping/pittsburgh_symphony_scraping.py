@@ -5,11 +5,13 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
 
 def scrape_ps_events_to_csv():
-    # Base URL with page parameter
+    # Base URL with 'page=' at the end (but not a fixed page number)
     base_url = (
         "https://www.pittsburghsymphony.org/calendar?"
-        "end_date=2026%2F09%2F04&genre=All+Genres&order_by=production&organization_id=2&"
-        "start_date=2025%2F03%2F19&page="
+        "end_date=2026%2F09%2F07&filter%5Bcurrent_page%5D=production&"
+        "filter%5Bmax%5D=2026-09-07+14%3A22%3A23+-0400&"
+        "filter%5Bmin%5D=2025-03-07T14%3A22%3A23-05%3A00&"
+        "genre=All+Genres&organization_id=2&start_date=2025%2F03%2F19&page="
     )
 
     # Configure Selenium (headless mode)
@@ -24,7 +26,9 @@ def scrape_ps_events_to_csv():
 
     # Loop through pages 1 to 6
     for page_num in range(1, 7):
+        # Construct the full URL by appending the page number
         url = f"{base_url}{page_num}"
+        print(f"Scraping Page {page_num}: {url}")
         driver.get(url)
 
         # Give the page a few seconds to load
@@ -88,6 +92,9 @@ def scrape_ps_events_to_csv():
     df = pd.DataFrame(all_events)
 
     # Save the DataFrame to a CSV file
-    df.to_csv("data/ps_events.csv", index=False)
+    output_path = "/Users/vkhare26/Documents/anlp/HW2/cmu-advanced-nlp-assignment-2/data/pso_events.csv"
+    df.to_csv(output_path, index=False)
+    print(f"Scraped events saved to '{output_path}'.")
 
-    # Save the DataFrame 
+if __name__ == "__main__":
+    scrape_ps_events_to_csv()
